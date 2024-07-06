@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "helper"
+version = "0.1.0"
+description = ""
+authors = ["Katiyarkarelaking <karelaking277@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+setuptools = "^70.2.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+helper = "cli:main" # Entry point to the cli
