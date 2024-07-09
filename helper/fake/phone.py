@@ -1,35 +1,37 @@
-from string import digits
-from random import shuffle
-from secrets import choice
 from typing import List
+from random import randint
+import re
 
 
-def random_phone(count: int = 1, code: str = "+91", _format: str = '') -> str | List[str]:
-    """
-    Generates the random phone numbers.
+def phone(format_string="+ZZ XXX-XXX-XXXX"):
+    # Define patterns for different placeholders
+    patterns = {
+        "X": lambda: str(randint(0, 9)),
+        "N": lambda: str(randint(2, 9)),  # For non-zero leading digit area codes
+        "Z": lambda: str(randint(1, 9)),  # For country codes
+    }
 
-    :param count: No. of output phone numbers
-    :param code: Country code
-    :param _format: Country specific format
-    :return: returns the single or list of phone numbers
-    """
-    choices: List[str] = list(digits)
-    print(choices)
-    shuffle(choices)
-    print(choices)
+    # Generate the phone number based on the format string
+    phone_number = ""
+    for char in format_string:
+        if char in patterns:
+            phone_number += patterns[char]()
+        else:
+            phone_number += char
 
-    if count != 1:
-        phone: List[str] = []
-        try:
-            for _ in range(count):
-                shuffle(choices)
-                phone.append(code + ' ' + ''.join(choice(choices) for _ in range(10)))
-        except:
-            raise IndexError('')
-        return phone
-    else:
-        try:
-            shuffle(choices)
-            return code + ' ' + ''.join(choice(choices) for _ in range(10))
-        except:
-            raise IndexError('')
+    return phone_number
+
+
+# Example usage
+formats = [
+    "XXX-XXX-XXXX",
+    "(XXX) XXX-XXXX",
+    "XXX.XXX.XXXX",
+    "XXX XXX XXXX",
+    "+X-XXX-XXX-XXXX",
+    "+XX-XXXX-XXXX",
+    "+Z-XX-XXX-XXX-XXXX",
+    "+ZZ-XX-XXXX-XXXX",
+]
+
+print(phone())

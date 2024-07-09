@@ -1,80 +1,75 @@
-from random import choice
+from json import load
 from typing import List
+from secrets import choice
+import re
 
-# Sample lists of first names and last names
-FIRST_NAME = [
-    "John",
-    "Jane",
-    "Alice",
-    "Bob",
-    "Charlie",
-    "Diana",
-    "Edward",
-    "Fiona",
-    "George",
-    "Hannah",
-    "Ian",
-    "Jack",
-    "Katherine",
-    "Liam",
-    "Mia",
-    "Noah",
-    "Olivia",
-    "Paul",
-    "Quincy",
-    "Rachel",
-    "Samuel",
-    "Tina",
-    "Uma",
-    "Victor",
-    "Wendy",
-    "Xander",
-    "Yara",
-    "Zachary",
-]
-
-LAST_NAME = [
-    "Smith",
-    "Johnson",
-    "Williams",
-    "Jones",
-    "Brown",
-    "Davis",
-    "Miller",
-    "Wilson",
-    "Moore",
-    "Taylor",
-    "Anderson",
-    "Thomas",
-    "Jackson",
-    "White",
-    "Harris",
-    "Martin",
-    "Thompson",
-    "Garcia",
-    "Martinez",
-    "Robinson",
-    "Clark",
-    "Rodriguez",
-    "Lewis",
-    "Lee",
-    "Walker",
-    "Hall",
-    "Allen",
-    "Young",
-    "King",
-]
+# Constants
+NAME_PATH: str = "../../constants/name.json"
 
 
-def random_name(count:int = 1) -> str | List[str]:
+# Sample data for different countries
+def load_data(path=NAME_PATH) -> dict:
+    try:
+        with open(path, "r") as file:
+            return load(file)
+    except:
+        raise FileNotFoundError
+
+
+# Generates random names
+def generate_name(country: str, is_middle_name: bool) -> str:
+    first_name = choice(names_data[country]["first_names"])
+    last_name = choice(names_data[country]["last_names"])
+
+    if is_middle_name:
+        middle_name = choice(names_data[country]["middle_names"])
+
+        full_name: str = f"{first_name} {middle_name} {last_name}"
+        # Ensure the name follows a specific pattern
+        if not re.match(r"^[A-Z][a-z]+(?: [A-Z][a-z]+){1,2}$", full_name):
+            raise ValueError(
+                f"Generated name '{full_name}' does not match the required pattern"
+            )
+        return full_name
+    else:
+
+        full_name: str = f"{first_name} {last_name}"
+        # Ensure the name follows a specific pattern
+        if not re.match(r"^[A-Z][a-z]+(?: [A-Z][a-z]+){1,2}$", full_name):
+            raise ValueError(
+                f"Generated name '{full_name}' does not match the required pattern"
+            )
+        return full_name
+
+
+names_data = load_data()
+
+
+def name(
+    country: str = "India", count: int = 1, is_middle_name=False
+) -> str | List[str]:
     """
     Generates the random names
 
     :param count: No. of output names
+    :param is_middel_name: Add middel names
     :return: returns the single of list of names
     """
 
-    if count == 1:
-        return f"{choice(FIRST_NAME)} {choice(LAST_NAME)}"
+    if country not in names_data:
+        raise ValueError(
+            f"Country '{country}' not supported. Available countries: {', '.join(names_data.keys())}"
+        )
+
+    if count != 1:
+        names: List[str] = []
+        for _ in range(count):
+            names.append(generate_name(country=country, is_middle_name=is_middle_name))
+        return names
+
     else:
-        return [f"{choice(FIRST_NAME)} {choice(LAST_NAME)}" for _ in range(count)]
+        return generate_name(country=country, is_middle_name=is_middle_name)
+
+
+if __name__ == "__main__":
+    print(name())

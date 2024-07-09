@@ -4,11 +4,21 @@ from time import sleep
 from helper.decorators.timeing import get_time
 
 
-def retry(retries:int | str = 3, delay:float | str = 1) -> Callable:
+def retry(retries: int | str = 3, delay: float | str = 1) -> Callable:
+    """
+    retry returns the callable function that runs the give function, give value of time.
+
+    :rtype: object
+    :param retries:
+    :param delay:
+    :return:
+    """
+
     # Don't let the user use this decorator if they are high
     if int(retries) < 1 or float(delay) <= 0:
         raise ValueError('Are you high, mate?')
-    def decorator(func:Callable) -> Callable:
+
+    def decorator(func: Callable) -> Callable:
 
         @get_time()
         @wraps(func)
@@ -26,5 +36,7 @@ def retry(retries:int | str = 3, delay:float | str = 1) -> Callable:
                     else:
                         print(f'Error: {repr(e)} -> Retrying...')
                         sleep(float(delay))  # Add a delay before running the next iteration
+
         return wrapper
+
     return decorator
