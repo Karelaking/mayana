@@ -1,5 +1,6 @@
 # Imports
 from secrets import choice
+from random import shuffle
 import string
 from typing import List
 import re
@@ -14,6 +15,7 @@ def generate_random_password(
     is_upper: bool,
     is_punctuation: bool,
 ):
+    shuffle(list(char_pool))
     password = "".join(choice(char_pool) for _ in range(length))
 
     # Ensuring at least one character from each selected pool is in the password
@@ -93,7 +95,7 @@ def password(
                 is_upper=is_upper,
                 is_punctuation=is_punctuation,
                 length=length,
-            )
+            ) 
             for _ in range(count)
         ]
 
