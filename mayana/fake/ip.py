@@ -59,4 +59,3 @@ def ip(format: str = "IPv4", count: int = 1) -> Union[str, List[str]]:
         return [generate_random_ip(format=format) for _ in range(count)]
     else:
         return generate_random_ip(format=format)
-

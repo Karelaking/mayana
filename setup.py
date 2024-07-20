@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(
-    name='helper',
+    name='mayana',
     version='1.0.0.0',
     packages=['test'],
     url='',

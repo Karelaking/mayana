@@ -1,7 +1,7 @@
 import unittest
 import re
 from random import choice, randint
-from helper.fake.password import password  # Adjust import as needed
+from mayana.fake.password import password  # Adjust import as needed
 
 
 # Generate 100 different test cases
