@@ -1,12 +1,12 @@
-from json import load
-from typing import List, Union
-from secrets import choice
-from pathlib import Path
 import re
+from json import load
+from pathlib import Path
+from secrets import choice
+from typing import List, Union
 
 # Constants
-ROOT = Path.cwd()
-NAME_PATH: str = f"{ROOT}/constants/name.json"
+ROOT = Path(__file__).parent.parent.parent
+NAME_PATH: str = str(Path.joinpath(ROOT, "constants/name.json"))
 
 
 # Sample data for different countries
@@ -66,8 +66,12 @@ def generate_name(country: str, is_middle_name: bool) -> str:
 names_data = load_data()
 
 
+# @click.command()
+# @click.option('--country', prompt="Enter country name", default="India", help=("he country for which to generate the "
+#                                                                                "name(s). Defaults to "
+#                                                                                "'India'"))
 def name(
-    country: str = "India", count: int = 1, is_middle_name: bool = False
+        country: str = "India", count: int = 1, is_middle_name: bool = False
 ) -> Union[str, List[str]]:
     """
     Generate one or more random names based on the specified country and middle name preference.
