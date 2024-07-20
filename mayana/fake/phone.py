@@ -1,6 +1,5 @@
 from typing import List
 from random import randint
-import re
 
 # Define patterns for different placeholders
 patterns = {
@@ -22,6 +21,23 @@ def generate_random_phone(format_string: str, patterns: dict) -> str:
 
 
 def phone(format_string: str = "+ZZ XXX-XXX-XXXX", count: int = 1) -> str | List[str]:
+    """
+
+    :param format_string:
+    :param count:
+    :return:
+
+    formats = [
+    "XXX-XXX-XXXX",
+    "(XXX) XXX-XXXX",
+    "XXX.XXX.XXXX",
+    "XXX XXX XXXX",
+    "+X-XXX-XXX-XXXX",
+    "+XX-XXXX-XXXX",
+    "+Z-XX-XXX-XXX-XXXX",
+    "+ZZ-XX-XXXX-XXXX",
+]
+    """
 
     if count != 1:
         return [
@@ -37,14 +53,5 @@ if __name__ == "__main__":
     print(phone())
 
 # Example usage
-# formats = [
-#     "XXX-XXX-XXXX",
-#     "(XXX) XXX-XXXX",
-#     "XXX.XXX.XXXX",
-#     "XXX XXX XXXX",
-#     "+X-XXX-XXX-XXXX",
-#     "+XX-XXXX-XXXX",
-#     "+Z-XX-XXX-XXX-XXXX",
-#     "+ZZ-XX-XXXX-XXXX",
-# ]
+
 #
