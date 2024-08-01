@@ -2,7 +2,7 @@ from pathlib import Path
 from random import choice
 from typing import List
 
-from utils.pickler import Loader
+from utils.loader import Loader
 
 loader: Loader = Loader()
 
@@ -11,11 +11,13 @@ class Name:
     """
     Generates a fake name based on a given name format string.
     """
+
     def __init__(self, count: int = 1, country: str = "India"):
-        self.__name_data = loader.load_data(file_path=str(Path.joinpath(Path(__file__).parent.parent.parent,
-                                                                        "constants/name.json")))
-        self.__name_parts_data = loader.load_data(file_path=str(Path.joinpath(Path(__file__).parent.parent.parent,
-                                                                              "constants/name_parts.json")))
+        self.__name_data = loader.load_data(file_path=Path.joinpath(Path(__file__).parent.parent.parent,
+
+                                                                    "constants/name.json"))
+        self.__name_parts_data = loader.load_data(file_path=Path.joinpath(Path(__file__).parent.parent.parent,
+                                                                          "constants/name_parts.json"))
         self.count: int = count
         self.country: str = country
         self._title: List[str] = self.__name_parts_data["title"]
@@ -55,7 +57,7 @@ class Name:
 
     def name(self, name_format: str):
         for _ in range(self.count):
-            yield self._generate_name(__name_format=name_format)
+            yield self._generate_name(name_format)
 
     @property
     def get_name(self):
