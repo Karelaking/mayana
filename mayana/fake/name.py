@@ -1,102 +1,95 @@
-import re
-from json import load
 from pathlib import Path
-from secrets import choice
-from typing import List, Union
+from random import choice
+from typing import List
 
-# Constants
-ROOT = Path(__file__).parent.parent.parent
-NAME_PATH: str = str(Path.joinpath(ROOT, "constants/name.json"))
+from utils.loader import Loader
+
+loader: Loader = Loader()
 
 
-# Sample data for different countries
-def load_data(path=NAME_PATH) -> dict:
+class Name:
     """
-    Load name data from a JSON file.
-
-    Parameters:
-    path (str): The path to the JSON file containing the name data. Defaults to NAME_PATH.
-
-    Returns:
-    dict: A dictionary containing the name data.
-
-    Raises:
-    FileNotFoundError: If the specified file cannot be found.
+    Generates a fake name based on a given name format string.
     """
-    try:
-        with open(path, "r") as file:
-            return load(file)
-    except FileNotFoundError:
-        raise FileNotFoundError("The specified file was not found.")
 
+    def __init__(self, count: int = 1, country: str = "India"):
+        self.__name_data = loader.load_data(file_path=Path.joinpath(Path(__file__).parent.parent.parent,
 
-# Generates random names
-def generate_name(country: str, is_middle_name: bool) -> str:
-    """
-    Generate a random name based on the specified country and middle name preference.
+                                                                    "constants/name.json"))
+        self.__name_parts_data = loader.load_data(file_path=Path.joinpath(Path(__file__).parent.parent.parent,
+                                                                          "constants/name_parts.json"))
+        self.count: int = count
+        self.country: str = country
+        self._title: List[str] = self.__name_parts_data["title"]
+        self._prefix: List[str] = self.__name_parts_data["prefix"]
+        self._first: List[str] = self.__name_data[country]["first_names"]
+        self._middel: List[str] = self.__name_data[country]["middle_names"]
+        self._last: List[str] = self.__name_data[country]["last_names"]
+        self._suffix: List[str] = self.__name_parts_data["suffix"]
 
-    Parameters:
-    country (str): The country for which to generate the name.
-    is_middle_name (bool): Whether to include a middle name in the generated name.
+    def __iter__(self):
+        yield self
 
-    Returns:
-    str: A randomly generated name.
+    def _generate_name(self, __name_format: str = "f M l", __count: int = 1) -> str:
+        _patterns = {
+            "t": lambda: choice(self._title).lower(),
+            "p": lambda: choice(self._prefix).lower(),
+            "f": lambda: choice(self._first).lower(),
+            "m": lambda: choice(self._middel).lower(),
+            "l": lambda: choice(self._last).lower(),
+            "s": lambda: choice(self._suffix).lower(),
+            "T": lambda: choice(self._title).capitalize(),
+            "P": lambda: choice(self._prefix).capitalize(),
+            "F": lambda: choice(self._first).capitalize(),
+            "M": lambda: choice(self._middel).capitalize(),
+            "L": lambda: choice(self._last).capitalize(),
+            "S": lambda: choice(self._suffix).capitalize(),
+        }
 
-    Raises:
-    ValueError: If the generated name does not match the required pattern.
-    """
-    first_name = choice(names_data[country]["first_names"])
-    last_name = choice(names_data[country]["last_names"])
+        _full_name: str = ""
 
-    if is_middle_name:
-        middle_name = choice(names_data[country]["middle_names"])
-        full_name: str = f"{first_name} {middle_name} {last_name}"
-    else:
-        full_name: str = f"{first_name} {last_name}"
+        for char in __name_format:
+            if char in _patterns:
+                _full_name += _patterns[char]()
+            else:
+                _full_name += char
+        return _full_name
 
-    # Ensure the name follows a specific pattern
-    if not re.match(r"^[A-Z][a-z]+(?: [A-Z][a-z]+){1,2}$", full_name):
-        raise ValueError(
-            f"Generated name '{full_name}' does not match the required pattern"
-        )
+    def name(self, name_format: str):
+        for _ in range(self.count):
+            yield self._generate_name(name_format)
 
-    return full_name
+    @property
+    def get_name(self):
+        for _ in range(self.count):
+            yield self._generate_name("F L")
 
+    @property
+    def get_first_name(self):
+        for _ in range(self.count):
+            yield self._generate_name("F")
 
-names_data = load_data()
+    @property
+    def get_last_name(self):
+        for _ in range(self.count):
+            yield self._generate_name("L")
 
+    @property
+    def get_name_with_title(self):
+        for _ in range(self.count):
+            yield self._generate_name("T F L")
 
-# @click.command()
-# @click.option('--country', prompt="Enter country name", default="India", help=("he country for which to generate the "
-#                                                                                "name(s). Defaults to "
-#                                                                                "'India'"))
-def name(
-        country: str = "India", count: int = 1, is_middle_name: bool = False
-) -> Union[str, List[str]]:
-    """
-    Generate one or more random names based on the specified country and middle name preference.
+    @property
+    def get_name_with_prefix(self):
+        for _ in range(self.count):
+            yield self._generate_name("P F L")
 
-    Parameters:
-    country (str): The country for which to generate the name(s). Defaults to "India".
-    count (int): The number of names to generate. Defaults to 1.
-    is_middle_name (bool): Whether to include a middle name in the generated name(s). Defaults to False.
+    @property
+    def get_name_with_suffix(self):
+        for _ in range(self.count):
+            yield self._generate_name("F L S")
 
-    Returns:
-    Union[str, List[str]]: A single name if count is 1, or a list of names if count is greater than 1.
-
-    Raises:
-    ValueError: If the specified country is not supported.
-    """
-    if country not in names_data:
-        raise ValueError(
-            f"Country '{country}' not supported. Available countries: {', '.join(names_data.keys())}"
-        )
-
-    if count != 1:
-        names: List[str] = [
-            generate_name(country=country, is_middle_name=is_middle_name)
-            for _ in range(count)
-        ]
-        return names
-    else:
-        return generate_name(country=country, is_middle_name=is_middle_name)
+    @property
+    def get_name_with_middel(self):
+        for _ in range(self.count):
+            yield self._generate_name("F M L")
